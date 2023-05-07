@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { BiArchiveOut } from "react-icons/bi";
+import { BiPencil } from "react-icons/bi";
+import { BsFillTrashFill } from "react-icons/bs";
 import "./TodoInsert.css";
 
-const TodoInsert = ({ onInsertToggle, onInsertTodo }) => {
+const TodoInsert = ({
+  onInsertToggle,
+  onInsertTodo,
+  selectedTodo,
+  onRemove,
+  onUpdate,
+}) => {
   const [value, setValue] = useState("");
 
   const onChange = (e) => {
@@ -15,18 +23,49 @@ const TodoInsert = ({ onInsertToggle, onInsertTodo }) => {
     setValue("");
     onInsertToggle();
   };
+
+  useEffect(() => {
+    // useEffect 함수 알아보기
+    if (selectedTodo !== null) {
+      setValue(selectedTodo.text);
+    }
+  }, [selectedTodo]);
+
   return (
     <div>
       <div className="background" onClick={onInsertToggle}></div>
-      <form onubmit={onSubmit}>
+      <form
+        onSubmit={
+          selectedTodo
+            ? () => {
+                onUpdate(selectedTodo.id, value);
+              }
+            : onSubmit
+        }
+      >
         <input
           placeholder="please type"
           value={value}
           onChange={onChange}
         ></input>
-        <button type="submit">
-          <BiArchiveOut />
-        </button>
+        {selectedTodo ? (
+          <div className="rewrite">
+            <BiPencil
+              onClick={() => {
+                onUpdate(selectedTodo.id, value);
+              }}
+            />
+            <BsFillTrashFill
+              onClick={() => {
+                onRemove(selectedTodo.id);
+              }}
+            />
+          </div>
+        ) : (
+          <button type="submit">
+            <BiArchiveOut />
+          </button>
+        )}
       </form>
     </div>
   );

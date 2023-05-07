@@ -9,6 +9,7 @@ import TodoInsert from "./components/TodoInsert";
 let nextId = 4;
 
 function App() {
+  const [selectedTodo, setSelectedTodo] = useState(null);
   const [insertToggle, setInsertToggle] = useState(false);
   const [todos, setTodos] = useState([
     {
@@ -25,6 +26,9 @@ function App() {
   ]);
 
   const onInsertToggle = () => {
+    if (selectedTodo !== null) {
+      setSelectedTodo(null);
+    }
     setInsertToggle((prev) => !prev);
   };
 
@@ -50,16 +54,40 @@ function App() {
     );
   };
 
+  const onChangeSelectedTodo = (todo) => {
+    setSelectedTodo(todo);
+  };
+
+  const onRemove = (id) => {
+    onInsertToggle();
+    setTodos((todos) => todos.filter((todo) => todo.id !== id));
+  };
+
+  const onUpdate = (id, text) => {
+    onInsertToggle();
+    setTodos((todos) =>
+      todos.map((todo) => (todo.id === id ? { ...todo, text } : todo))
+    );
+  };
+
   return (
     <Template todoLength={todos.length}>
-      <TodoList todos={todos} onCheckToggle={onCheckToggle} />
+      <TodoList
+        todos={todos}
+        onCheckToggle={onCheckToggle}
+        onInsertToggle={onInsertToggle}
+        onChangeSelectedTodo={onChangeSelectedTodo}
+      />
       <div className="add-todo-button" onClick={onInsertToggle}>
         <BiPlusCircle />
       </div>
       {insertToggle && (
         <TodoInsert
+          selectedTodo={selectedTodo}
           onInsertToggle={onInsertToggle}
           onInsertTodo={onInsertTodo}
+          onRemove={onRemove}
+          onUpdate={onUpdate}
         />
       )}
     </Template>
